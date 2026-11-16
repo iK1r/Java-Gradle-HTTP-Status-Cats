@@ -1,0 +1,38 @@
+plugins {
+    id 'application'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClass = 'com.example.httpcat.HttpImageStatusCli'
+}
+
+// The CLI needs access to user input when started from PowerShell.
+tasks.named('run', JavaExec) {
+    standardInput = System.in
+}
+
+// Checks the project against a local fake HTTP server, without Internet access.
+tasks.register('selfTest', JavaExec) {
+    group = 'verification'
+    description = 'Test HTTP checker, downloader and CLI using a local server'
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.example.httpcat.HttpCatSelfTest'
+}
+
+tasks.named('check') {
+    dependsOn selfTest
+}
+
+
+tasks.named('test') {
+    failOnNoDiscoveredTests = false
+}
+
