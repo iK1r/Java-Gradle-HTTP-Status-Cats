@@ -80,7 +80,7 @@ public class HttpCatSelfTest {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try (PrintStream output = new PrintStream(buffer, true, StandardCharsets.UTF_8);
              Scanner scanner = new Scanner(input + "\n")) {
-            new HttpImageStatusCli(downloader, scanner, output).askStatus();
+            new HttpImageStatusCli(downloader, scanner).askStatus(output);
         }
         return buffer.toString(StandardCharsets.UTF_8);
     }

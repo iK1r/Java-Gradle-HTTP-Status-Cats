@@ -1,3 +1,4 @@
+
 package com.example.httpcat;
 
 import java.io.PrintStream;
@@ -7,23 +8,30 @@ import java.util.Scanner;
 public class HttpImageStatusCli {
     private final HttpStatusImageDownloader downloader;
     private final Scanner scanner;
-    private final PrintStream out;
 
-    public HttpImageStatusCli() {
-        this(new HttpStatusImageDownloader(), new Scanner(System.in), System.out);
+    public static void main(String[] args) {
+        HttpStatusImageDownloader downloader = new HttpStatusImageDownloader();
+        Scanner scanner = new Scanner(System.in);
+
+        HttpImageStatusCli cli = new HttpImageStatusCli(downloader, scanner);
+        cli.askStatus();
     }
 
-    HttpImageStatusCli(HttpStatusImageDownloader downloader, Scanner scanner, PrintStream out) {
+    HttpImageStatusCli(HttpStatusImageDownloader downloader, Scanner scanner) {
         this.downloader = Objects.requireNonNull(downloader);
         this.scanner = Objects.requireNonNull(scanner);
-        this.out = Objects.requireNonNull(out);
     }
 
     public void askStatus() {
-        out.println("Enter HTTP status code");
+        askStatus(System.out);
+    }
+
+    // This version is used in local tests.
+    void askStatus(PrintStream output) {
+        output.println("Enter HTTP status code");
 
         if (!scanner.hasNextLine()) {
-            out.println("Please enter valid number");
+            output.println("Please enter valid number");
             return;
         }
 
@@ -31,21 +39,16 @@ public class HttpImageStatusCli {
         try {
             code = Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            out.println("Please enter valid number");
+            output.println("Please enter valid number");
             return;
         }
 
         try {
             downloader.downloadStatusImage(code);
         } catch (HttpStatusImageNotFoundException e) {
-            // Keep the text exactly as requested in the homework.
-            out.println("There is not image for HTTP status " + code);
+            output.println("There is not image for HTTP status " + code);
         } catch (HttpCatException e) {
-            out.println("Could not download image: " + e.getMessage());
+            output.println("Could not download image: " + e.getMessage());
         }
-    }
-
-    public static void main(String[] args) {
-        new HttpImageStatusCli().askStatus();
     }
 }
